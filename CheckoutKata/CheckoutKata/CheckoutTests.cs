@@ -37,31 +37,14 @@ namespace CheckoutKata
     {
         private readonly Dictionary<char, int> _prices;
         private readonly Dictionary<char, int> _counts;
+        private readonly List<Offer> _offers;
+        private int _total;
 
         public Checkout()
         {
             _prices = new Dictionary<char, int>{{'A', 50}, {'B', 30}};
             _counts = new Dictionary<char, int>();
-        }
-
-        public int PriceFor(string skus)
-        {
-            var total = 0;
-
-            if (string.IsNullOrEmpty(skus))
-                return total;
-            
-            foreach (var sku in skus)
-            {
-                if (_counts.ContainsKey(sku))
-                    _counts[sku]++;
-                else
-                    _counts[sku] = 1;
-
-                total += _prices[sku];
-            }
-
-            var offers = new List<Offer>()
+            _offers = new List<Offer>()
                 {
                     new Offer
                         {
@@ -70,21 +53,48 @@ namespace CheckoutKata
                             Discount = 20
                         },
 
-                        new Offer
-                            {
-                                SKU = 'B',
-                                Frequency = 2,
-                                Discount = 15
-                            }
+                    new Offer
+                        {
+                            SKU = 'B',
+                            Frequency = 2,
+                            Discount = 15
+                        }
                 };
 
-            foreach (var offer in offers)
+            _total = 0;
+        }
+
+        public int PriceFor(string skus)
+        {
+            if (string.IsNullOrEmpty(skus))
+                return _total;
+            
+            CalculateBasePrice(skus);
+            ApplyOffers();
+
+            return _total;
+        }
+
+        private void ApplyOffers()
+        {
+            foreach (var offer in _offers)
             {
                 if (_counts.ContainsKey(offer.SKU))
-                    total -= offer.Discount * (_counts[offer.SKU] / offer.Frequency);
+                    _total -= offer.Discount*(_counts[offer.SKU]/offer.Frequency);
             }
+        }
 
-            return total;
+        private void CalculateBasePrice(string skus)
+        {
+            foreach (var sku in skus)
+            {
+                if (_counts.ContainsKey(sku))
+                    _counts[sku]++;
+                else
+                    _counts[sku] = 1;
+
+                _total += _prices[sku];
+            }
         }
     }
 
