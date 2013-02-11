@@ -27,6 +27,7 @@ namespace CheckoutKata
         [TestCase("AAAAAA", 260)]
         [TestCase("B", 30)]
         [TestCase("BB", 45)]
+        [TestCase("C", 20)]
         public void PriceForListOfSkusIsAsExpected(string skus, int expected)
         {
             Assert.That(_checkout.PriceFor(skus), Is.EqualTo(expected));
@@ -42,7 +43,7 @@ namespace CheckoutKata
 
         public Checkout()
         {
-            _prices = new Dictionary<char, int>{{'A', 50}, {'B', 30}};
+            _prices = new Dictionary<char, int>{{'A', 50}, {'B', 30}, {'C', 20}};
             _counts = new Dictionary<char, int>();
             _offers = new List<Offer>()
                 {
