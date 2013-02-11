@@ -26,6 +26,7 @@ namespace CheckoutKata
         [TestCase("AAA", 130)]
         [TestCase("AAAAAA", 260)]
         [TestCase("B", 30)]
+        [TestCase("BB", 45)]
         public void PriceForListOfSkusIsAsExpected(string skus, int expected)
         {
             Assert.That(_checkout.PriceFor(skus), Is.EqualTo(expected));
@@ -62,6 +63,9 @@ namespace CheckoutKata
 
             if(_counts.ContainsKey('A'))
                 total -= 20 * (_counts['A'] / 3);
+
+            if(_counts.ContainsKey('B'))
+                total -= 15 * (_counts['B'] / 2);
 
             return total;
         }
