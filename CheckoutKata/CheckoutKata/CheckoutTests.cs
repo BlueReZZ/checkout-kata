@@ -61,13 +61,37 @@ namespace CheckoutKata
                 total += _prices[sku];
             }
 
-            if(_counts.ContainsKey('A'))
-                total -= 20 * (_counts['A'] / 3);
+            var offers = new List<Offer>()
+                {
+                    new Offer
+                        {
+                            SKU = 'A',
+                            Frequency = 3,
+                            Discount = 20
+                        },
 
-            if(_counts.ContainsKey('B'))
-                total -= 15 * (_counts['B'] / 2);
+                        new Offer
+                            {
+                                SKU = 'B',
+                                Frequency = 2,
+                                Discount = 15
+                            }
+                };
+
+            foreach (var offer in offers)
+            {
+                if (_counts.ContainsKey(offer.SKU))
+                    total -= offer.Discount * (_counts[offer.SKU] / offer.Frequency);
+            }
 
             return total;
         }
+    }
+
+    public class Offer
+    {
+        public char SKU { get; set; }
+        public int Frequency { get; set; }
+        public int Discount { get; set; }
     }
 }
