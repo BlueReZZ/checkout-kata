@@ -1,4 +1,5 @@
-﻿using NUnit.Framework;
+﻿using System.Collections.Generic;
+using NUnit.Framework;
 
 namespace CheckoutKata
 {
@@ -37,6 +38,7 @@ namespace CheckoutKata
         {
             var total = 0;
             var countOfA = 0;
+            var prices = new Dictionary<char, int>{{'A', 50}, {'B', 30}};
 
             if (string.IsNullOrEmpty(skus))
                 return total;
@@ -45,13 +47,11 @@ namespace CheckoutKata
             {
                 if (sku == 'A')
                 {
-                    total += 50;
                     countOfA++;
                 }
-                else
-                {
-                    total += 30;
-                }
+
+
+                total += prices[sku];
             }
 
             total -= 20 * (countOfA / 3);
