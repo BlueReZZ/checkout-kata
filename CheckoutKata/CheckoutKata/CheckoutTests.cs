@@ -31,6 +31,7 @@ namespace CheckoutKata
         [TestCase("D", 15)]
         [TestCase("CDBA", 115)]
         [TestCase("AAABB", 175)]
+        [TestCase("ABABA", 175)]
         public void PriceForListOfSkusIsAsExpected(string skus, int expected)
         {
             Assert.That(_checkout.PriceFor(skus), Is.EqualTo(expected));
