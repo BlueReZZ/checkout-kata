@@ -21,6 +21,7 @@ namespace CheckoutKata
 
         [Test]
         [TestCase("A", 50)]
+        [TestCase("AA", 100)]
         public void PriceForListOfSkusIsAsExpected(string skus, int expected)
         {
             Assert.That(_checkout.PriceFor(skus), Is.EqualTo(expected));
@@ -31,10 +32,16 @@ namespace CheckoutKata
     {
         public int PriceFor(string skus)
         {
-            if (string.IsNullOrEmpty(skus))
-                return 0;
+            var total = 0;
 
-            return 50;
+            if (string.IsNullOrEmpty(skus))
+                return total;
+            
+            foreach (var sku in skus)
+            {
+                total += 50;
+            }
+            return total;
         }
     }
 }
