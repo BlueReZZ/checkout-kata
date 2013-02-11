@@ -39,22 +39,23 @@ namespace CheckoutKata
             var total = 0;
             var countOfA = 0;
             var prices = new Dictionary<char, int>{{'A', 50}, {'B', 30}};
+            var counts = new Dictionary<char, int>();
 
             if (string.IsNullOrEmpty(skus))
                 return total;
             
             foreach (var sku in skus)
             {
-                if (sku == 'A')
-                {
-                    countOfA++;
-                }
-
+                if (counts.ContainsKey(sku))
+                    counts[sku]++;
+                else
+                    counts[sku] = 1;
 
                 total += prices[sku];
             }
 
-            total -= 20 * (countOfA / 3);
+            if(counts.ContainsKey('A'))
+                total -= 20 * (counts['A'] / 3);
 
             return total;
         }
