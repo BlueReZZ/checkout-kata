@@ -43,14 +43,14 @@ namespace CheckoutKata
     {
         private readonly Catalogue _prices;
         private readonly Dictionary<char, int> _counts;
-        private readonly List<Offer> _offers;
+        private readonly Offers _offers;
         private int _total;
 
         public Checkout()
         {
             _prices = new Catalogue(new Dictionary<char, int>{{'A', 50}, {'B', 30}, {'C', 20}, {'D', 15}});
             _counts = new Dictionary<char, int>();
-            _offers = new List<Offer>()
+            _offers = new Offers(new List<Offer>()
                 {
                     new Offer
                         {
@@ -65,7 +65,7 @@ namespace CheckoutKata
                             Frequency = 2,
                             Discount = 15
                         }
-                };
+                });
 
             _total = 0;
         }
@@ -92,12 +92,29 @@ namespace CheckoutKata
 
         private void ApplyOffers()
         {
-            foreach (var offer in _offers)
-            {
-                if (_counts.ContainsKey(offer.SKU))
-                    _total -= offer.Discount*(_counts[offer.SKU]/offer.Frequency);
-            }
+            _total -= _offers.FindDiscountFor(_counts);
         }
+    }
+
+    public class Offers : List<Offer>
+    {
+        private readonly List<Offer> _offers;
+
+        public Offers(List<Offer> offers)
+        {
+            _offers = offers;
+            
+        }
+
+        public int FindDiscountFor(Dictionary<char, int> counts)
+        {
+            var result = 0;
+            foreach (var offer in _offers.Where(offer => counts.ContainsKey(offer.SKU)))
+            {
+               result += (offer.Discount * (counts[offer.SKU] / offer.Frequency));
+            }
+            return result;
+        }        
     }
 
     public class Catalogue
