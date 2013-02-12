@@ -42,14 +42,12 @@ namespace CheckoutKata
     public class Checkout
     {
         private readonly Catalogue _prices;
-        private readonly Dictionary<char, int> _counts;
         private readonly Offers _offers;
-        private int _total;
 
         public Checkout()
         {
             _prices = new Catalogue(new Dictionary<char, int>{{'A', 50}, {'B', 30}, {'C', 20}, {'D', 15}});
-            _counts = new Dictionary<char, int>();
+            new Dictionary<char, int>();
             _offers = new Offers(new List<Offer>()
                 {
                     new Offer
@@ -66,33 +64,19 @@ namespace CheckoutKata
                             Discount = 15
                         }
                 });
-
-            _total = 0;
         }
 
         public int PriceFor(string skus)
         {
+            var total = 0;
             if (string.IsNullOrEmpty(skus))
-                return _total;
+                return total;
             
-            _total = _prices.BasePriceFor(skus);
-            
-            foreach (var sku in skus)
-            {
-                if (_counts.ContainsKey(sku))
-                    _counts[sku]++;
-                else
-                    _counts[sku] = 1;
-            }
+            total = _prices.BasePriceFor(skus);
 
-            ApplyOffers();
+            total -= _offers.FindDiscountFor(skus);
 
-            return _total;
-        }
-
-        private void ApplyOffers()
-        {
-            _total -= _offers.FindDiscountFor(_counts);
+            return total;
         }
     }
 
@@ -106,15 +90,26 @@ namespace CheckoutKata
             
         }
 
-        public int FindDiscountFor(Dictionary<char, int> counts)
+        public int FindDiscountFor(string skus)
         {
-            var result = 0;
-            foreach (var offer in _offers.Where(offer => counts.ContainsKey(offer.SKU)))
+            var counts = new Dictionary<char, int>();
+            foreach (var sku in skus)
             {
-               result += (offer.Discount * (counts[offer.SKU] / offer.Frequency));
+                if (counts.ContainsKey(sku))
+                    counts[sku]++;
+                else
+                   counts[sku] = 1;
             }
-            return result;
-        }        
+
+            return FindDiscountFor(counts);
+        }
+
+        private int FindDiscountFor(Dictionary<char, int> counts)
+        {
+            return _offers
+                .Where(offer => counts.ContainsKey(offer.SKU))
+                .Sum(offer => (offer.Discount*(counts[offer.SKU]/offer.Frequency)));
+        }
     }
 
     public class Catalogue
