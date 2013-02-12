@@ -40,14 +40,14 @@ namespace CheckoutKata
 
     public class Checkout
     {
-        private readonly Dictionary<char, int> _prices;
+        private readonly Catalogue _prices;
         private readonly Dictionary<char, int> _counts;
         private readonly List<Offer> _offers;
         private int _total;
 
         public Checkout()
         {
-            _prices = new Dictionary<char, int>{{'A', 50}, {'B', 30}, {'C', 20}, {'D', 15}};
+            _prices = new Catalogue(new Dictionary<char, int>{{'A', 50}, {'B', 30}, {'C', 20}, {'D', 15}});
             _counts = new Dictionary<char, int>();
             _offers = new List<Offer>()
                 {
@@ -98,8 +98,23 @@ namespace CheckoutKata
                 else
                     _counts[sku] = 1;
 
-                _total += _prices[sku];
+                _total += _prices.PriceFor(sku);
             }
+        }
+    }
+
+    public class Catalogue
+    {
+        private readonly Dictionary<char, int> _priceList;
+
+        public Catalogue(Dictionary<char, int> priceList)
+        {
+            _priceList = priceList;
+        }
+
+        public int PriceFor(char sku)
+        {
+            return _priceList[sku];
         }
     }
 
