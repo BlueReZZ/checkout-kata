@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using NUnit.Framework;
 
 namespace CheckoutKata
@@ -74,7 +75,16 @@ namespace CheckoutKata
             if (string.IsNullOrEmpty(skus))
                 return _total;
             
-            CalculateBasePrice(skus);
+            _total = _prices.BasePriceFor(skus);
+            
+            foreach (var sku in skus)
+            {
+                if (_counts.ContainsKey(sku))
+                    _counts[sku]++;
+                else
+                    _counts[sku] = 1;
+            }
+
             ApplyOffers();
 
             return _total;
@@ -88,19 +98,6 @@ namespace CheckoutKata
                     _total -= offer.Discount*(_counts[offer.SKU]/offer.Frequency);
             }
         }
-
-        private void CalculateBasePrice(string skus)
-        {
-            foreach (var sku in skus)
-            {
-                if (_counts.ContainsKey(sku))
-                    _counts[sku]++;
-                else
-                    _counts[sku] = 1;
-
-                _total += _prices.PriceFor(sku);
-            }
-        }
     }
 
     public class Catalogue
@@ -112,7 +109,12 @@ namespace CheckoutKata
             _priceList = priceList;
         }
 
-        public int PriceFor(char sku)
+        public int BasePriceFor(string skus)
+        {
+            return skus.Sum(sku => BasePriceFor(sku));
+        }
+
+        private int BasePriceFor(char sku)
         {
             return _priceList[sku];
         }
