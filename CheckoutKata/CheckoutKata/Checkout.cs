@@ -10,7 +10,6 @@ namespace CheckoutKata
         public Checkout()
         {
             _prices = new Catalogue(new Dictionary<char, int>{{'A', 50}, {'B', 30}, {'C', 20}, {'D', 15}});
-            new Dictionary<char, int>();
             _offers = new Offers(new List<Offer>()
                 {
                     new Offer
